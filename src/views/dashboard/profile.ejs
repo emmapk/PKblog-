@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <% data.forEach(item => { %>
+        <form action="/register" method="post">
+          
+            <input type="text" name="name" value="<%= item.name %>">
+            <input type="email" name="email" value="<%= item.email %>">
+            <input type="text" name="description" value="<%= item.description %>">
+            <input type="text" name="address" value="<%= item.address %>">
+            
+              <a href="/update/<%= item._id %>">Update</a>
+            
+        </form>
+      <% }); %>
+    
+</body>
+</html>

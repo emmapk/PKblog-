@@ -1,0 +1,18 @@
+>
+    <h1>Update User</h1>
+
+        <form action="/update"  method="put">
+            
+                <input type="text" id="name" name="name" value="<%= user.name %>">
+            
+                <input type="email" id="email" name="email" value="<%= user.email %>">
+          
+                <input type="text" id="description" name="description" value="<%= user.description %>">
+         
+                <input type="text" id="address" name="address" value="<%= user.address %>">
+          
+                <button type="submit">Update User</button>
+        </form>
+            <a href="/update">Update User</a>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 2em;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+        }
+        .container h2 {
+            margin-bottom: 1em;
+            color: #333;
+            text-align: center;
+        }
+        .container input[type="text"], 
+        .container input[type="email"],
+        .container input[type="password"] {
+            width: 100%;
+            padding: 0.7em;
+            margin-bottom: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .container button {
+            width: 100%;
+            padding: 0.7em;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            font-size: 1em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .container button:hover {
+            background-color: #0056b3;
+        }
+        .container p {
+            margin-top: 1em;
+            text-align: center;
+        }
+        .container a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .container a:hover {
+            text-decoration: underline;
+        }
+        .upload-form {
+            margin-top: 2em;
+        }
+        .upload-form input[type="file"] {
+            display: block;
+            margin-bottom: 1em;
+        }
+        .upload-form input[type="submit"] {
+            width: 100%;
+            padding: 0.7em;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            font-size: 1em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .upload-form input[type="submit"]:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form action="/register" method="post">
+            <h2>Register</h2>
+            <input type="text" name="name" placeholder="Name" required>
+
+            <input type="text" name="description" placeholder="Description" required>
+
+            <input type="text" name="address" placeholder="Address" required>
+
+            <input type="email" name="email" placeholder="Email" required>
+
+            <input type="password" name="password" placeholder="Password" required>
+            
+            <button type="submit">Register</button>
+            
+            <p>Already have an account? <a href="/login">LOGIN</a></p>
+        </form>
+        
+        <form class="upload-form" method="post" enctype="multipart/form-data" action="/upload">
+            <input type="file" name="file" required>
+            <input type="submit" value="Upload File">
+        </form>
+    </div>
+</body>
+</html>
