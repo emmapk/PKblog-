@@ -151,26 +151,37 @@ export const login = async (req: Request, res: Response) => {
     }
   };
   
+  export const renderUpdateForm = async (req: Request, res: Response) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return res.status(404).render('error', { message: 'User not found' });
+        }
+        return res.render('dashboard/update', { user });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).render('error', { message: 'Failed to load user data' });
+    }
+};
 
 export const updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { name, email, address, description, image } = req.body;
+        const { userId } = req.params;
 
-        const id = req.params.body
-
-        if (!id) {
+        if (!userId) {
             return res.status(400).json({ message: 'User ID is required' });
         }
 
         const updatedData = { name, email, address, description, image };
 
-        const user = await User.findByIdAndUpdate(id, updatedData, { new: true });
+        const user = await User.findByIdAndUpdate(userId, updatedData, { new: true });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).render("dashboard/update", { user });
+        res.status(200).render("dashboard/profile", { user });
 
         return res.status(200).json({ message: 'User updated successfully', user });
     } catch (error) {
@@ -179,19 +190,18 @@ export const updateUser = async (req: Request, res: Response): Promise<Response>
     }
 };
 
-  
-  
-
 process.on('SIGINT', async () => {
   if (mongoose.connection) {
     await mongoose.connection.close();
     console.log('MongoDB connection closed');
   }
-})
-  export default {
-    getAuth,
-    register,
-    login,
-    verifyEmail,
-    updateUser
-  };
+});
+
+export default {
+  getAuth,
+  register,
+  login,
+  verifyEmail,
+  renderUpdateForm,
+  updateUser
+};

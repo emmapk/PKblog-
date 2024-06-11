@@ -1,7 +1,7 @@
->
+
     <h1>Update User</h1>
 
-        <form action="/update"  method="put">
+    <form action="/update/<%= user._id %>" method="put">
             
                 <input type="text" id="name" name="name" value="<%= user.name %>">
             
@@ -13,6 +13,6 @@
           
                 <button type="submit">Update User</button>
         </form>
-            <a href="/update">Update User</a>
+            <!-- <a href="/update">Update User</a> -->
 </body>
 </html>

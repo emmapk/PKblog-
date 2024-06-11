@@ -4,6 +4,7 @@ import {
     register, 
     login, 
     verifyEmail, 
+    renderUpdateForm,
     updateUser 
 } from "../controller/controller.authentication";
 
@@ -17,7 +18,7 @@ router.post("/login", login);
 
 router.get("/verify-email/:verificationToken", verifyEmail);
 
-router.get("/update", register); 
+router.get("/update/:userId", renderUpdateForm); 
 router.put("/update/:userId", updateUser); 
 
 router.get('/auth/confirmation/:token', verifyEmail);
