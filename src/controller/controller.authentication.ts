@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from '../database/userschema';
 import sendEmail from '../controller/nodeMailer';
+import upload from './upload';
 
 dotenv.config();
 
@@ -77,14 +78,14 @@ export const register = async (req: Request, res: Response) => {
       address,
       description,
       image,
-      verificationToken,
+      verificationToken ,
       isEmailConfirmed: false,
     });
 
     await newUser.save();
 
     const subject = 'Confirm your email';
-    const baseURL = process.env.BASE_URL || 'http://localhost:9992';
+    const baseURL = process.env.BASE_URL || 'http://localhost:8888';
     const verificationURL = `${baseURL}/auth/confirmation/${verificationToken}`;
 
     const text = `Please click on the following link to confirm your email: ${verificationURL}`;
@@ -167,21 +168,19 @@ export const login = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { name, email, address, description, image } = req.body;
-        const { userId } = req.params;
+        const id = req.params.userId;
 
-        if (!userId) {
+        if (!id) {
             return res.status(400).json({ message: 'User ID is required' });
         }
 
         const updatedData = { name, email, address, description, image };
 
-        const user = await User.findByIdAndUpdate(userId, updatedData, { new: true });
+        const user = await User.findByIdAndUpdate(id, updatedData, { new: true });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
-        res.status(200).render("dashboard/profile", { user });
 
         return res.status(200).json({ message: 'User updated successfully', user });
     } catch (error) {
@@ -189,7 +188,6 @@ export const updateUser = async (req: Request, res: Response): Promise<Response>
         return res.status(500).json({ message: 'Failed to update user' });
     }
 };
-
 process.on('SIGINT', async () => {
   if (mongoose.connection) {
     await mongoose.connection.close();

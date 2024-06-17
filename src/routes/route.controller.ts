@@ -19,7 +19,7 @@ router.post("/login", login);
 router.get("/verify-email/:verificationToken", verifyEmail);
 
 router.get("/update/:userId", renderUpdateForm); 
-router.put("/update/:userId", updateUser); 
+router.post("/update/:userId", updateUser);
 
 router.get('/auth/confirmation/:token', verifyEmail);
 

@@ -9,7 +9,7 @@ import Route from "./routes/route.controller";
 import ejs from "ejs";
 
 const app = express();
-const PORT: number = 9992;
+const PORT: number = 8888;
 
 app.set('view engine', 'ejs');
 app.set("views", path.join(__dirname, "/views"));
