@@ -1,36 +1,33 @@
-import multer, { FileFilterCallback } from "multer";
-import path from "path";
-import { Request } from "express";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "auth/register");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
-  }
-});
-
-
-function checkFileType(file: Express.Multer.File, cb: FileFilterCallback) {
-  const filetypes = /jpeg|jpg|png|gif/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
-
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb(new Error("Error: Images Only!"));
-  }
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const fileFilter = (req: any, file: any, cb: any) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type, only images are allowed!'), false);
+  }
+};
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1000000 }, 
-  fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
-    checkFileType(file, cb);
-  }
-}).single('image');
+  fileFilter: fileFilter,
+  limits: { fileSize: 1024 * 1024 * 5 }, 
+});
 
 export default upload;

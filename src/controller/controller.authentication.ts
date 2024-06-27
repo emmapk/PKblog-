@@ -12,7 +12,7 @@ dotenv.config();
 const dbUri = process.env.DB_URI || 'mongodb://localhost:27017/jentamakeri';
 const jwtSecret = process.env.JWT_SECRET || 'pk_jwt_secret';
 
-// Connect to MongoDB
+
 mongoose.connect(dbUri)
   .then(() => {
     console.log('MongoDB connected successfully');
@@ -50,12 +50,13 @@ export const getAuth = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
-  const { name, password, email, address, description, image } = req.body;
- 
+  const { name, password, email, address, description } = req.body;
+  const image = req.file?.path; 
+
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).render("dashboard/404",{message: 'Email already exists. Please use a different email.'});
+      return res.status(400).render("dashboard/404", { message: 'Email already exists. Please use a different email.' });
     }
 
     const validateEmail = (email: string): boolean => {
@@ -68,7 +69,6 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-
     const verificationToken = jwt.sign({ email }, jwtSecret, { expiresIn: '24h' });
 
     const newUser = new User({
@@ -78,7 +78,7 @@ export const register = async (req: Request, res: Response) => {
       address,
       description,
       image,
-      verificationToken ,
+      verificationToken,
       isEmailConfirmed: false,
     });
 
@@ -87,7 +87,6 @@ export const register = async (req: Request, res: Response) => {
     const subject = 'Confirm your email';
     const baseURL = process.env.BASE_URL || 'http://localhost:8888';
     const verificationURL = `${baseURL}/auth/confirmation/${verificationToken}`;
-
     const text = `Please click on the following link to confirm your email: ${verificationURL}`;
     await sendEmail(email, subject, text);
 
@@ -121,79 +120,82 @@ export const verifyEmail = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-  
-    try {
-      const userId:string = await authenticate(email, password);
-  
-      if (!userId) {
-        return res.status(200).render("auth/login")
-      }
-  
-     
-      const token:string = jwt.sign({ userId }, jwtSecret, { expiresIn: "5h" });
+  const { email, password } = req.body;
 
-  
-      const db = mongoose.connection;
-      const collection = db.collection('users');
-      const data = await collection.find().toArray();
-  
-     
-      return res.status(200).render('dashboard/profile', { data, token });
-    } catch (error) {
-      console.error('Error during login:', error);
-  
-      
-      if (error.message === 'Email not confirmed') {
-        return res.status(403).render("dashboard/404", { message: 'Please confirm your email to log in' });
-      }
-  
-      return res.status(500).json({ message: 'Failed to authenticate user' });
+  try {
+    const userId: string = await authenticate(email, password);
+
+    if (!userId) {
+      return res.status(200).render("auth/login");
     }
-  };
-  
-  export const renderUpdateForm = async (req: Request, res: Response) => {
-    try {
-        const user = await User.findById(req.params.userId);
-        if (!user) {
-            return res.status(404).render('error', { message: 'User not found' });
-        }
-        return res.render('dashboard/update', { user });
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        res.status(500).render('error', { message: 'Failed to load user data' });
+
+    const token: string = jwt.sign({ userId }, jwtSecret, { expiresIn: "5h" });
+
+    const db = mongoose.connection;
+    const collection = db.collection('users');
+    const data = await collection.find().toArray();
+
+    return res.status(200).render('dashboard/profile', { data, token });
+  } catch (error) {
+    console.error('Error during login:', error);
+
+    if (error.message === 'Email not confirmed') {
+      return res.status(403).render("dashboard/404", { message: 'Please confirm your email to log in' });
     }
+
+    return res.status(500).json({ message: 'Failed to authenticate user' });
+  }
+};
+
+export const renderUpdateForm = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).render('error', { message: 'User not found' });
+    }
+    return res.render('dashboard/update', { user });
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).render('error', { message: 'Failed to load user data' });
+  }
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<Response> => {
-    try {
-        const { name, email, address, description, image } = req.body;
-        const id = req.params.userId;
+  try {
+    const { name, email, address, description } = req.body;
+    const image = req.file?.path;
+    const id = req.params.userId;
 
-        if (!id) {
-            return res.status(400).json({ message: 'User ID is required' });
-        }
-
-        const updatedData = { name, email, address, description, image };
-
-        const user = await User.findByIdAndUpdate(id, updatedData, { new: true });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        return res.status(200).json({ message: 'User updated successfully', user });
-    } catch (error) {
-        console.error('Error updating user:', error);
-        return res.status(500).json({ message: 'Failed to update user' });
+    if (!id) {
+      return res.status(400).json({ message: 'User ID is required' });
     }
+
+    const updatedData = { name, email, address, description, image };
+
+    const user = await User.findByIdAndUpdate(id, updatedData, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    
+   return  res.status(200).json( { 
+      message: 'User updated successfully', 
+     data: user 
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return res.status(500).json({ message: 'Failed to update user' });
+  }
 };
+
 process.on('SIGINT', async () => {
   if (mongoose.connection) {
     await mongoose.connection.close();
     console.log('MongoDB connection closed');
   }
 });
+
 
 export default {
   getAuth,

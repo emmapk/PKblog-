@@ -54,15 +54,17 @@
 <body>
     <% data.forEach(item => { %>
         <div class="form-container">
-            <form action="/register" method="post">
-                <input type="text" name="name" value="<%= item.name %>" placeholder="Name">
-                <input type="email" name="email" value="<%= item.email %>" placeholder="Email">
-                <input type="text" name="description" value="<%= item.description %>" placeholder="Description">
-                <input type="text" name="address" value="<%= item.address %>" placeholder="Address">
-                <input type="file" name="image">
-                <a href="/update/<%= item._id %>">Update</a>
-            </form>
+          <form action="/register" method="post">
+            <input type="text" name="name" value="<%= item.name %>" placeholder="Name">
+            <input type="email" name="email" value="<%= item.email %>" placeholder="Email">
+            <input type="text" name="description" value="<%= item.description %>" placeholder="Description">
+            <input type="text" name="address" value="<%= item.address %>" placeholder="Address">
+            <% if (item.image) { %>
+              <img src="<%= item.image %>" alt="Image">
+            <% } %>
+            <a href="/update/<%= item._id %>">Update</a>
+          </form>
         </div>
-    <% }); %>
+      <% }); %>
 </body>
 </html>

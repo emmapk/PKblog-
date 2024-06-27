@@ -7,11 +7,12 @@ import {
     renderUpdateForm,
     updateUser 
 } from "../controller/controller.authentication";
+import upload from "../controller/upload";
 
 const router: Router = express.Router();
 
 router.get("/register", getAuth);
-router.post("/register", register);
+router.post("/register", upload.single('image'), register);
 
 router.get("/login", login);
 router.post("/login", login);
@@ -19,7 +20,7 @@ router.post("/login", login);
 router.get("/verify-email/:verificationToken", verifyEmail);
 
 router.get("/update/:userId", renderUpdateForm); 
-router.post("/update/:userId", updateUser);
+router.post("/update/:userId", upload.single('image'), updateUser);
 
 router.get('/auth/confirmation/:token', verifyEmail);
 

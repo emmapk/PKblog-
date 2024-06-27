@@ -39,6 +39,10 @@
             font-size: 16px;
         }
 
+        input[type="file"] {
+            margin-bottom: 15px;
+        }
+
         button {
             padding: 10px 15px;
             border: none;
@@ -57,11 +61,12 @@
 </head>
 <body>
     <h1>Update User</h1>
-    <form action="/update/<%= user._id %>" method="post">
+    <form action="/update/<%= user._id %>" method="post" enctype="multipart/form-data">
         <input type="text" name="name" value="<%= user.name %>" placeholder="Name">
         <input type="email" name="email" value="<%= user.email %>" placeholder="Email">
         <input type="text" name="description" value="<%= user.description %>" placeholder="Description">
         <input type="text" name="address" value="<%= user.address %>" placeholder="Address">
+        <input type="file" name="image">
         <button type="submit">Update User</button>
     </form>
 </body>
